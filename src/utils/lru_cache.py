@@ -22,39 +22,47 @@ class LRUCache:
         self.hits = 0
     
     def put(self, key: str, value: Any) -> Any:
-        self.cache.move_to_end(key)
-        return self.cache[key] = (value, self.ttl)
+        """Add or update key-value pair"""
+        timestamp = time.time()
 
-    #remember to store this into a time stamp so you can use it in the check_time_stamp function
-    def cache_time_stamp() -> int:
-        timeStamp = time.time()
-        return timeStamp
-
-    def check_time_stamp(self, storedTimeStamp: int) -> Optional[int]:
-         currentTime = time.time()
-         age = currentTime - storedTimeStamp
-
-         return age > self.ttl ? 0 : 1 
-
-    def get(self, key: str) -> Any:
-        """
-        Get value, returns None if not found or expired.
+        #if key exists update
+        if (self.cache[key]):
+            self.cache[key] = (value, timestamp)
+            self.cache.move_to_end(key)
         
-        TODO:
-        1. Check if key exists (if not, increment misses and return None)
-        2. Get value and timestamp from cache
-        3. Check if expired (current time - timestamp > ttl)
-        4. If expired, delete and return None
-        5. Move to end (most recently used)
-        6. Increment hits
-        7. Return value
+        #check the capacity and add the key
+        if (len(self.cache) >= self.capacity):
+            #removes the last item (least recently used)
+            self.cache.popitem(last=False)
         
-        Hint: Store as (value, timestamp) tuple in cache
-        Hint: Use time.time() for current timestamp
-        """
+        #lastly add the key
+        self.cache[key] = (value, timestamp)
+
+    def get(self, key: str, value: Any) -> Any:     
+        #check if the key is in the cache
         if key not in self.cache.keys():
             self.misses += 1
             return "Key is invalid"
+        
+        #store the value, timestamp as a tuple
+        value, timestamp = self.cache[key]
+
+        #if key has ttl, check if it is expired
+        if self.ttl and (time.time() - timestamp < self.ttl):
+            del self.cache[key]
+            self.misses += 1
+            return None
+
+        #move to the end (most recently used)
+        self.cache.move_to_end(key)
+        self.hits += 1
+        return value
 
 
     def clear(self) -> None:
+        """Clear cached items"""
+        self.cache.clear()
+        self.misses = 0
+        self.hits = 0
+
+

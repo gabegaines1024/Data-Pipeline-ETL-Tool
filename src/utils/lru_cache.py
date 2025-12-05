@@ -39,7 +39,7 @@ class LRUCache:
         #lastly add the key
         self.cache[key] = (value, timestamp)
 
-    def get(self, key: str, value: Any) -> Any:     
+    def get(self, key: str) -> Any:     
         #check if the key is in the cache
         if key not in self.cache.keys():
             self.misses += 1

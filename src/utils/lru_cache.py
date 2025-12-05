@@ -90,4 +90,57 @@ class LRUCache:
 
     def __repr__(self):
         """return string representation"""
-        return f"LRUCache(cache={list(self.cache.keys())}, capacity={self.capacity})"
+    return f"LRUCache(cache={list(self.cache.keys())}, capacity={self.capacity})"
+
+class CachedAPIClient:
+    """API client with automatic caching for ETL pipeline."""
+    
+    def __init__(self, cache_size: int = 100, ttl: int = 300):
+        """
+        Initialize cached API client.
+        
+        Args:
+            cache_size: Maximum cached responses
+            ttl: Cache TTL in seconds (default 5 minutes)
+        
+        TODO: Initialize LRUCache with given parameters
+        """
+        pass
+    
+    def _make_cache_key(self, url: str, params: dict = None) -> str:
+        """
+        Generate cache key from URL and parameters.
+        
+        TODO:
+        1. Create dict with url and params
+        2. Convert to JSON string (sorted keys for consistency)
+        3. Hash with MD5
+        4. Return hex digest
+        
+        Hint: Use json.dumps() and hashlib.md5()
+        """
+        pass
+    
+    def get(self, url: str, params: dict = None) -> Any:
+        """
+        Get data with caching.
+        
+        Args:
+            url: API endpoint URL
+            params: Query parameters
+            
+        Returns:
+            Cached or fresh API response
+        
+        TODO:
+        1. Generate cache key
+        2. Try to get from cache
+        3. If cache hit, return cached data
+        4. If cache miss, return None (actual API call in api_extractor.py)
+        """
+        pass
+    
+    def cache_stats(self) -> dict:
+        """Get cache statistics."""
+        # TODO: Return self.cache.stats()
+        pass

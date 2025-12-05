@@ -79,4 +79,14 @@ class LRUCache:
 
         return stats
 
+    def __len__(self):
+        """return the size of the cache"""
+        return len(self.cache.keys())
 
+    def __contains__(self, key):
+        """Support 'in' Operator"""
+        return self.cache.keys() in self.cache
+
+    def __repr__(self):
+        """return string representation"""
+        return f"LRU Cache(cache: {self.cache}, capacity: {self.capacity}, size{len(self.keys)})"

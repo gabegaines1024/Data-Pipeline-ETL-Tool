@@ -65,4 +65,18 @@ class LRUCache:
         self.misses = 0
         self.hits = 0
 
+    def stats(self, name.upper(): str) -> dict:
+        """Return cache statistics"""
+        size, capacity, hits, misses, hit_rate = len(self.cache), self.capacity, self.hits, self.misses, (self.hits/self.hits+self.misses) * 100
+
+        stats = {f"{name} Cache Statistics: ": 
+                 {"size:": size},
+                 {"capacity: " : capacity},
+                 {"hits: ": hits},
+                 {"misses: ": misses},
+                 {"hit rate: ": hit_rate}
+                 }
+
+        return stats
+
 

@@ -14,9 +14,10 @@ class LRUCache:
     """LRU Cache with optional TTL (time-to-live) support"""
 
     def __init__(self, capacity: int, ttl: Optional[int] = None):
-        if(capacity):
-            capacity >= 0 ?  self.capacity = capacity : raise ValueError("Capacity must be greater than 0!")
-        ttl ? self.ttl = ttl : None
+        if(capacity) <= 0:
+            raise ValueError("Capacity must be greater than 0!")
+        self.capacity = capacity
+        self.ttl = ttl
         self.cache = OrderedDict()
         self.misses = 0
         self.hits = 0
@@ -26,8 +27,8 @@ class LRUCache:
         timestamp = time.time()
 
         #if key exists update
-        if (self.cache[key]):
-            self.cache[key] = (value, timestamp)
+        if key in self.cache:
+            self.cache[key] = (value, tistamp)
             self.cache.move_to_end(key)
         
         #check the capacity and add the key
@@ -48,7 +49,7 @@ class LRUCache:
         value, timestamp = self.cache[key]
 
         #if key has ttl, check if it is expired
-        if self.ttl and (time.time() - timestamp < self.ttl):
+        if self.ttl is not None and (time.time() - timestamp >= self.ttl):
             del self.cache[key]
             self.misses += 1
             return None
@@ -65,28 +66,28 @@ class LRUCache:
         self.misses = 0
         self.hits = 0
 
-    def stats(self, name.upper(): str) -> dict:
-        """Return cache statistics"""
-        size, capacity, hits, misses, hit_rate = len(self.cache), self.capacity, self.hits, self.misses, (self.hits/self.hits+self.misses) * 100
+    def stats(self, name: str) -> dict:
+        total = self.hits + self.misses
+        hit_rate = (self.hits / total * 100) if total > 0 else 0
 
-        stats = {f"{name} Cache Statistics: ": 
-                 {"size:": size},
-                 {"capacity: " : capacity},
-                 {"hits: ": hits},
-                 {"misses: ": misses},
-                 {"hit rate: ": hit_rate}
-                 }
-
-        return stats
+        return {
+            f"{name.upper()} Cache Stats": {
+                "size": len(self.cache),
+                "capacity": self.capacity,
+                "hits": self.hits,
+                "misses": self.misses,
+                "hit_rate_percent": hit_rate,
+            }
+        }
 
     def __len__(self):
         """return the size of the cache"""
-        return len(self.cache.keys())
+        return len(self.cache)
 
     def __contains__(self, key):
         """Support 'in' Operator"""
-        return self.cache.keys() in self.cache
+        return key in self.cache
 
     def __repr__(self):
         """return string representation"""
-        return f"LRU Cache(cache: {self.cache}, capacity: {self.capacity}, size{len(self.keys)})"
+        return f"LRUCache(cache={list(self.cache.keys())}, capacity={self.capacity})"

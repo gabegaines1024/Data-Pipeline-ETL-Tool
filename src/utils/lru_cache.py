@@ -96,31 +96,28 @@ class CachedAPIClient:
     """API client with automatic caching for ETL pipeline."""
     
     def __init__(self, cache_size: int = 100, ttl: int = 300):
-        """
-        Initialize cached API client.
-        
-        Args:
-            cache_size: Maximum cached responses
-            ttl: Cache TTL in seconds (default 5 minutes)
-        
-        TODO: Initialize LRUCache with given parameters
-        """
-        pass
+       self.cache = OrderedDict()
+       self.cache_size = cache_size
+       self.ttl = ttl
     
     def _make_cache_key(self, url: str, params: dict = None) -> str:
         """
         Generate cache key from URL and parameters.
-        
-        TODO:
-        1. Create dict with url and params
-        2. Convert to JSON string (sorted keys for consistency)
-        3. Hash with MD5
-        4. Return hex digest
-        
-        Hint: Use json.dumps() and hashlib.md5()
-        """
-        pass
-    
+        """ 
+        #key to recognize a parameters and url
+        key_data = {
+                'url': url,
+                'params': params or {}   
+                }
+
+        #convert to JSON string(sorted keys for consistency)
+        json_data = json.dumps(key_data, sort_keys=True)
+
+        #hash with MD5 and return
+        md5_hash = hashlib.md5()
+        md5_hash.update(json_data.encode('utf-8'))
+        return md5_hash.hexdigest()
+         
     def get(self, url: str, params: dict = None) -> Any:
         """
         Get data with caching.

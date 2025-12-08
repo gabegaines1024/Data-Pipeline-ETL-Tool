@@ -9,7 +9,6 @@ from typing import Any, Optional
 import time
 import hashlib
 import json
-import requests
 import time
 
 class LRUCache:
@@ -98,7 +97,7 @@ class CachedAPIClient:
     
     def __init__(self, cache_size: int = 100, ttl: int = 300):
        self.cache = LRUCache(cache_size, ttl)
-       self.session = requests.Session()
+       
 
     def _make_cache_key(self, url: str, params: dict = None) -> str:
         """
@@ -115,7 +114,7 @@ class CachedAPIClient:
 
         #hash with MD5 and return
         hash_object = hashlib.md5(json_data.encode('utf-8'))
-        return response.hexdigest()
+        return hash_object
          
     def get(self, url: str, params: dict = None) -> Any:
         """
@@ -126,7 +125,7 @@ class CachedAPIClient:
         key = self._make_cache_key(url, params)
         
         #try cache first
-        cached_response = self.cache.get(cache_key)
+        cached_response = self.cache.get(key)
         if cached_response is not None:
             print(f"Cache HIT for {url}")
             return cached_response

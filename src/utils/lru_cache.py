@@ -9,6 +9,8 @@ from typing import Any, Optional
 import time
 import hashlib
 import json
+import requests
+import time
 
 class LRUCache:
     """LRU Cache with optional TTL (time-to-live) support"""
@@ -28,8 +30,9 @@ class LRUCache:
 
         #if key exists update
         if key in self.cache:
-            self.cache[key] = (value, tistamp)
+            self.cache[key] = (value, timestamp)
             self.cache.move_to_end(key)
+            return 
         
         #check the capacity and add the key
         if (len(self.cache) >= self.capacity):
@@ -41,9 +44,9 @@ class LRUCache:
 
     def get(self, key: str) -> Any:     
         #check if the key is in the cache
-        if key not in self.cache.keys():
-            self.misses += 1
-            return "Key is invalid"
+        if key not in self.cache:
+           self.misses += 1
+           return None
         
         #store the value, timestamp as a tuple
         value, timestamp = self.cache[key]
@@ -66,19 +69,17 @@ class LRUCache:
         self.misses = 0
         self.hits = 0
 
-    def stats(self, name: str) -> dict:
+    def stats(self) -> dict:
         total = self.hits + self.misses
         hit_rate = (self.hits / total * 100) if total > 0 else 0
 
         return {
-            f"{name.upper()} Cache Stats": {
-                "size": len(self.cache),
-                "capacity": self.capacity,
-                "hits": self.hits,
-                "misses": self.misses,
-                "hit_rate_percent": hit_rate,
-            }
-        }
+    'size': len(self.cache),
+    'capacity': self.capacity,
+    'hits': self.hits,
+    'misses': self.misses,
+    'hit_rate': f'{hit_rate:.2f}%'
+}
 
     def __len__(self):
         """return the size of the cache"""
@@ -90,16 +91,15 @@ class LRUCache:
 
     def __repr__(self):
         """return string representation"""
-    return f"LRUCache(cache={list(self.cache.keys())}, capacity={self.capacity})"
+        return f"LRUCache(cache={list(self.cache.keys())}, capacity={self.capacity})"
 
 class CachedAPIClient:
     """API client with automatic caching for ETL pipeline."""
     
     def __init__(self, cache_size: int = 100, ttl: int = 300):
-       self.cache = OrderedDict()
-       self.cache_size = cache_size
-       self.ttl = ttl
-    
+       self.cache = LRUCache(cache_size, ttl)
+       self.session = requests.Session()
+
     def _make_cache_key(self, url: str, params: dict = None) -> str:
         """
         Generate cache key from URL and parameters.
@@ -114,30 +114,62 @@ class CachedAPIClient:
         json_data = json.dumps(key_data, sort_keys=True)
 
         #hash with MD5 and return
-        md5_hash = hashlib.md5()
-        md5_hash.update(json_data.encode('utf-8'))
-        return md5_hash.hexdigest()
+        hash_object = hashlib.md5(json_data.encode('utf-8'))
+        return response.hexdigest()
          
     def get(self, url: str, params: dict = None) -> Any:
         """
         Get data with caching.
-        
-        Args:
-            url: API endpoint URL
-            params: Query parameters
-            
-        Returns:
-            Cached or fresh API response
-        
-        TODO:
-        1. Generate cache key
-        2. Try to get from cache
-        3. If cache hit, return cached data
-        4. If cache miss, return None (actual API call in api_extractor.py)
         """
-        pass
+
+        #generate cache key
+        key = self._make_cache_key(url, params)
+        
+        #try cache first
+        cached_response = self.cache.get(cache_key)
+        if cached_response is not None:
+            print(f"Cache HIT for {url}")
+            return cached_response
+        #Cache miss - make actual API request
+        print(f"Cache MISS for {url} - fetching from API...")
+
+     #Test your implementation
+if __name__ == "__main__":
+    print("=== Testing LRU Cache ===\n")
     
-    def cache_stats(self) -> dict:
-        """Get cache statistics."""
-        # TODO: Return self.cache.stats()
-        pass
+    # Test 1: Basic operations
+    cache = LRUCache(capacity=3)
+    cache.put("user:1", {"name": "Alice", "age": 30})
+    cache.put("user:2", {"name": "Bob", "age": 25})
+    cache.put("user:3", {"name": "Charlie", "age": 35})
+    
+    print(f"Cache size: {len(cache)}")
+    print(f"Get user:1: {cache.get('user:1')}")
+    print()
+    
+    # Test 2: Eviction
+    cache.put("user:4", {"name": "David", "age": 40})
+    print(f"After adding user:4, user:2 should be evicted")
+    print(f"Get user:2: {cache.get('user:2')}")
+    print()
+    
+    # Test 3: TTL expiration
+    cache_ttl = LRUCache(capacity=5, ttl=2)  # 2 second TTL
+    cache_ttl.put("temp", "data")
+    print(f"Get temp immediately: {cache_ttl.get('temp')}")
+    
+    time.sleep(3)
+    print(f"Get temp after 3 seconds: {cache_ttl.get('temp')}")
+    print() 
+   
+    #Test 4: Cache Statistics
+    print("Cache Stats: ")
+    print(cache.stats())
+    print()
+
+    # Test 5: Cached API Client
+    api_client = CachedAPIClient(cache_size=10, ttl=300)
+    
+    # Simulate caching API calls
+    key = api_client._make_cache_key("https://api.example.com/users", {"id": 123})
+    print(f"Cache key: {key}")

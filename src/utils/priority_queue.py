@@ -57,7 +57,7 @@ class JobScheduler:
         """
 
         #check if the queue is empty
-        if not self.is_empty()
+        if self.is_empty():
             return None
         
         #get the job tuple
@@ -74,12 +74,13 @@ class JobScheduler:
         View next job without removing it.
         """
         #check if the heap is empty 
-        if not self.is_empty()
+        if self.is_empty():
             return None
         
         #extract job_info without popping and return
         job_info: ETLJob = self._queue[0]
         return job_info
+
     def is_empty(self) -> bool:
         """Check if scheduler has pending jobs."""
         # TODO: Return whether heap is empty
@@ -99,13 +100,19 @@ class JobScheduler:
     def stats(self) -> dict:
         """
         Return scheduler statistics.
-        
-        TODO: Return dict with:
-        - pending: number of pending jobs
-        - completed: number of completed jobs
-        - next_priority: priority of next job (or None)
         """
-        pass
+        #check if queue is empty
+        if self._queue:
+            return {"Empty Queue": -1}
+
+        #peek next job
+        job_info = self.peek_next()
+
+        stats = {
+                "pending jobs": self._counter - self._jobs_completed,
+                "completed jobs": self._jobs_completed,
+                "next job priority": job_info.priority
+            }
     
     def __len__(self):
         """Return number of pending jobs."""

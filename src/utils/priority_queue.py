@@ -46,7 +46,7 @@ class JobScheduler:
         etl_job = ETLJob(JobPriority, job_id, job_type)
 
         #Push to heap as a tuple
-        etl_job.heaqp.heappush(self._queue, etl_job)
+        heaqp.heappush(self._queue, etl_job)
         
         #increment counter
         self._counter += 1
@@ -54,17 +54,20 @@ class JobScheduler:
     def get_next_job(self) -> Optional[ETLJob]:
         """
         Get next highest priority job.
-        
-        Returns:
-            ETLJob or None if queue is empty
-        
-        TODO:
-        1. Check if heap is empty
-        2. Pop from heap using heapq.heappop()
-        3. Extract job from tuple
-        4. Return job
         """
-        pass
+
+        #check if the queue is empty
+        if !(self._queue):
+            return None
+        
+        #get the job tuple
+        job_info = self._queue.heapq.heappop()
+        
+        #get the job id
+        job = job_info.job_id
+
+        #return the job id
+        return job
     
     def peek_next(self) -> Optional[ETLJob]:
         """

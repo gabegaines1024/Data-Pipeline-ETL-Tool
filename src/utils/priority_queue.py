@@ -57,7 +57,7 @@ class JobScheduler:
         """
 
         #check if the queue is empty
-        if not self._queue:
+        if is_empty == 0:
             return None
         
         #get the job tuple
@@ -72,15 +72,9 @@ class JobScheduler:
     def peek_next(self) -> Optional[ETLJob]:
         """
         View next job without removing it.
-        
-        TODO:
-        1. Check if heap is empty
-        2. Look at heap[0]
-        3. Extract job from tuple
-        4. Return job (don't pop!)
         """
         #check if the heap is empty 
-        if not self._queue:
+        if is_empty == 0:
             return None
         
         #extract job_info without popping and return
@@ -89,7 +83,9 @@ class JobScheduler:
     def is_empty(self) -> bool:
         """Check if scheduler has pending jobs."""
         # TODO: Return whether heap is empty
-        pass
+        if not self._queue:
+            return 0
+        return 1
     
     def pending_jobs(self) -> int:
         """Return number of pending jobs."""

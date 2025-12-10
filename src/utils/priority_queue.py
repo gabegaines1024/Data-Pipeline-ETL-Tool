@@ -32,7 +32,7 @@ class JobScheduler:
     """Priority-based job scheduler for ETL pipeline."""
     
     def __init__(self):
-        self._heap = []
+        self._queue = []
         self._counter = 0
         self._jobs_completed = 0
     
@@ -41,21 +41,15 @@ class JobScheduler:
                     config: dict = None) -> None:
         """
         Schedule a new ETL job.
-        
-        Args:
-            job_id: Unique job identifier
-            job_type: Type of job ('extract', 'transform', 'load')
-            priority: Job priority level
-            config: Job configuration dict
-        
-        TODO:
-        1. Create ETLJob object
-        2. Push to heap as tuple (priority, counter, job)
-        3. Increment counter
-        
-        Hint: Use heapq.heappush()
         """
-        pass
+        #ETL Job object:
+        etl_job = ETLJob(JobPriority, job_id, job_type)
+
+        #Push to heap as a tuple
+        etl_job.heaqp.heappush(self._queue, etl_job)
+        
+        #increment counter
+        self._counter += 1
     
     def get_next_job(self) -> Optional[ETLJob]:
         """

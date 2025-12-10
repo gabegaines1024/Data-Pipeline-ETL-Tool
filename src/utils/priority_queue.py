@@ -43,10 +43,10 @@ class JobScheduler:
         Schedule a new ETL job.
         """
         #ETL Job object:
-        etl_job = ETLJob(JobPriority, job_id, job_type)
+        etl_job = ETLJob(priority.value, job_id=job_id, job_type=job_type, config=config or {})
 
         #Push to heap as a tuple
-        heaqp.heappush(self._queue, etl_job)
+        heapq.heappush(self._queue, etl_job)
         
         #increment counter
         self._counter += 1
@@ -57,17 +57,14 @@ class JobScheduler:
         """
 
         #check if the queue is empty
-        if !(self._queue):
+        if not (self._queue):
             return None
         
         #get the job tuple
-        job_info = self._queue.heapq.heappop()
+        job_info: ETLJob = heapq.heappop(self._queue)
         
-        #get the job id
-        job = job_info.job_id
-
         #return the job id
-        return job
+        return job_info
     
     def peek_next(self) -> Optional[ETLJob]:
         """

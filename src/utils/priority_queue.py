@@ -57,14 +57,14 @@ class JobScheduler:
         """
 
         #check if the queue is empty
-        if is_empty == 0:
+        if not self.is_empty()
             return None
         
         #get the job tuple
         job_info: ETLJob = heapq.heappop(self._queue)
        
         #update jobs completed
-        complete_job(job: ETLJob = job_info)
+        self.complete_job(job_info)
 
         #return the job id
         return job_info
@@ -74,7 +74,7 @@ class JobScheduler:
         View next job without removing it.
         """
         #check if the heap is empty 
-        if is_empty == 0:
+        if not self.is_empty()
             return None
         
         #extract job_info without popping and return
@@ -83,9 +83,7 @@ class JobScheduler:
     def is_empty(self) -> bool:
         """Check if scheduler has pending jobs."""
         # TODO: Return whether heap is empty
-        if not self._queue:
-            return 0
-        return 1
+        return not self._queue
     
     def pending_jobs(self) -> int:
         """Return number of pending jobs."""
@@ -96,7 +94,7 @@ class JobScheduler:
     def complete_job(self, job: ETLJob) -> None:
         """Mark job as completed (for tracking)."""
         # TODO: Increment completed counter
-        self._job_completed += 1
+        self._jobs_completed += 1
             
     def stats(self) -> dict:
         """

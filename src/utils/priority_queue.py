@@ -32,7 +32,7 @@ class JobScheduler:
     """Priority-based job scheduler for ETL pipeline."""
     
     def __init__(self):
-        self._queue = []
+        self._heap = []
         self._counter: int = 0
         self._jobs_completed = 0
     
@@ -46,7 +46,7 @@ class JobScheduler:
         etl_job = ETLJob(priority.value, _counter = self._counter, job_id=job_id, job_type=job_type, config=config or {})
 
         #Push to heap as a tuple
-        heapq.heappush(self._queue, etl_job)
+        heapq.heappush(self._heap, etl_job)
         
         #increment counter
         self._counter += 1
@@ -61,7 +61,7 @@ class JobScheduler:
             return None
         
         #get the job tuple
-        job_info: ETLJob = heapq.heappop(self._queue)
+        job_info: ETLJob = heapq.heappop(self._heap)
        
         #update jobs completed
         self.complete_job(job_info)
@@ -78,18 +78,18 @@ class JobScheduler:
             return None
         
         #extract job_info without popping and return
-        job_info: ETLJob = self._queue[0]
+        job_info: ETLJob = self._heap[0]
         return job_info
 
     def is_empty(self) -> bool:
         """Check if scheduler has pending jobs."""
         # TODO: Return whether heap is empty
-        return not self._queue
+        return not self._heap
     
     def pending_jobs(self) -> int:
         """Return number of pending jobs."""
         # TODO: Return length of heap
-        return len(self._queue)
+        return len(self._heap)
         
     
     def complete_job(self, job: ETLJob) -> None:
@@ -102,28 +102,30 @@ class JobScheduler:
         Return scheduler statistics.
         """
         #check if queue is empty
-        if self._queue:
+        if not self._heap:
             return {"Empty Queue": -1}
 
         #peek next job
         job_info = self.peek_next()
 
         stats = {
-                "pending jobs": self._counter - self._jobs_completed,
+                "pending jobs": self.pending_jobs(),
                 "completed jobs": self._jobs_completed,
                 "next job priority": job_info.priority
             }
+
+        return stats
     
     def __len__(self):
         """Return number of pending jobs."""
-        # TODO: Return heap length
-        pass
+        return len(self._heap)
     
     def __repr__(self):
         """String representation."""
         # TODO: Return informative string
-        pass
-
+        return (f"JobScheduler(Pending: {self.pending_jobs()}, "
+                f"Completed: {self._jobs_completed}, "
+                f"Total Scheduled: {self._counter})")
 
 class DependencyResolver:
     """

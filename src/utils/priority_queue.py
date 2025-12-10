@@ -1,10 +1,3 @@
-"""
-Priority Queue for ETL job scheduling.
-Chapter 1: Data Structures
-
-YOUR TASK: Implement priority queue for scheduling ETL jobs
-"""
-
 import heapq
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -25,11 +18,6 @@ class JobPriority(IntEnum):
 class ETLJob:
     """
     Represents an ETL job with priority and metadata.
-    
-    TODO: Understand @dataclass decorator:
-    - What does order=True do?
-    - What does field(compare=True/False) mean?
-    - Why do we need default_factory?
     """
     priority: int = field(compare=True)
     created_at: datetime = field(compare=True, default_factory=datetime.now)
@@ -40,20 +28,13 @@ class ETLJob:
     def __repr__(self):
         return f"ETLJob(id={self.job_id}, type={self.job_type}, priority={self.priority})"
 
-
 class JobScheduler:
     """Priority-based job scheduler for ETL pipeline."""
     
     def __init__(self):
-        """
-        Initialize job scheduler.
-        
-        TODO: Initialize:
-        - self._heap (empty list for heapq)
-        - self._counter (for tie-breaking)
-        - self._jobs_completed (track completed jobs)
-        """
-        pass
+        self._heap = []
+        self._counter = 0
+        self._jobs_completed = 0
     
     def schedule_job(self, job_id: str, job_type: str, 
                     priority: JobPriority = JobPriority.NORMAL,

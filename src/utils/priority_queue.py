@@ -62,7 +62,10 @@ class JobScheduler:
         
         #get the job tuple
         job_info: ETLJob = heapq.heappop(self._queue)
-        
+       
+        #update jobs completed
+        self.jobs_completed += 1:
+
         #return the job id
         return job_info
     

@@ -24,7 +24,7 @@ class ETLJob:
     job_id: str = field(compare=False)
     job_type: str = field(compare=False)  # 'extract', 'transform', 'load'
     config: dict = field(compare=False, default_factory=dict)
-    
+    counter: int = field(compare=True, repr=False) #secondary tie breaker 
     def __repr__(self):
         return f"ETLJob(id={self.job_id}, type={self.job_type}, priority={self.priority})"
 
@@ -33,7 +33,7 @@ class JobScheduler:
     
     def __init__(self):
         self._queue = []
-        self._counter = 0
+        self._counter: int = 0
         self._jobs_completed = 0
     
     def schedule_job(self, job_id: str, job_type: str, 
@@ -43,7 +43,7 @@ class JobScheduler:
         Schedule a new ETL job.
         """
         #ETL Job object:
-        etl_job = ETLJob(priority.value, job_id=job_id, job_type=job_type, config=config or {})
+        etl_job = ETLJob(priority.value, _counter = self._counter, job_id=job_id, job_type=job_type, config=config or {})
 
         #Push to heap as a tuple
         heapq.heappush(self._queue, etl_job)

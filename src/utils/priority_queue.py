@@ -90,7 +90,8 @@ class JobScheduler:
     def pending_jobs(self) -> int:
         """Return number of pending jobs."""
         # TODO: Return length of heap
-        pass
+        return len(self._queue)
+        
     
     def complete_job(self, job: ETLJob) -> None:
         """Mark job as completed (for tracking)."""

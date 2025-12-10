@@ -64,7 +64,7 @@ class JobScheduler:
         job_info: ETLJob = heapq.heappop(self._queue)
        
         #update jobs completed
-        self.jobs_completed += 1:
+        complete_job(job: ETLJob = job_info)
 
         #return the job id
         return job_info
@@ -96,8 +96,8 @@ class JobScheduler:
     def complete_job(self, job: ETLJob) -> None:
         """Mark job as completed (for tracking)."""
         # TODO: Increment completed counter
-        pass
-    
+        self._job_completed += 1
+            
     def stats(self) -> dict:
         """
         Return scheduler statistics.

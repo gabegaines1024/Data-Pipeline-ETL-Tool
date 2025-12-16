@@ -8,28 +8,20 @@ from datetime import datetime
 class DataRecord:
     """
     Represents a single data record.
-    
-    TODO: Implement methods to:
-    1. Get field values safely
-    2. Set field values
     """
-    data: Dict[str, Any]
+    data: Dict[str, Any] = field(default_factory=dict)
     source: str = "unknown"
     timestamp: datetime = field(default_factory=datetime.now)
     
     def get(self, key: str, default: Any = None) -> Any:
         """
         Get a field value.
-        
-        TODO: Return data[key] if exists, else default
         """
-        pass
+        return self.data.get(key, default)
     
     def set(self, key: str, value: Any) -> None:
         """
         Set a field value.
-        
-        TODO: Set data[key] = value
         """
-        pass
+        self.data[key] = value
 

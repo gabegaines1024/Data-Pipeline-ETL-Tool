@@ -135,15 +135,12 @@ class DependencyResolver:
     def __init__(self, scheduler: JobScheduler):
         """
         Initialize dependency resolver.
-        
-        TODO: Initialize the following attributes:
-        1. self._scheduler - reference to the JobScheduler
-        2. self._dependencies - dict mapping job_id -> list of jobs it depends on
-        3. self._completed - set to track which jobs have been completed
-        4. self._waiting - dict mapping job_id -> job info for jobs waiting on dependencies
         """
-        pass
-    
+        self._scheduler: JobScheduler = scheduler
+        self._dependencies: dict[str, list[str]] = {}
+        self._completed: set[str] = set()
+        self._waiting: dict[str, ETLJob] = {}
+        self._counter: int = 0
     def add_dependency(self, job_id: str, depends_on: list[str]) -> None:
         """
         Add job dependency.
@@ -151,32 +148,31 @@ class DependencyResolver:
         Args:
             job_id: Job that has dependencies
             depends_on: List of job IDs that must complete first
-        
-        TODO: Store in dependencies dict
         """
-        pass
+        self._dependencies[job_id] = depends_on
+        for dependency in depends_on:
+            if dependency not in self._dependencies:
+                self._dependencies[dependency] = []
+            self._dependencies[dependency].append(job_id)
     
     def can_schedule(self, job_id: str) -> bool:
         """
         Check if job's dependencies are satisfied.
-        
-        TODO:
-        1. Get dependencies for job
-        2. Check if all dependencies are in completed set
-        3. Return True if can schedule, False otherwise
         """
-        pass
+        dependencies = self._dependencies.get(job_id, [])
+        return all(dependency in self._completed for dependency in dependencies)
     
     def schedule_with_dependencies(self, job_id: str, job_type: str,
                                    priority: JobPriority,
-                                   depends_on: list[str] = None) -> None:
+                                   depends_on: list[str] = None,
+                                   config: dict = None) -> None:
         """
         Schedule job if dependencies are met.
-        
-        TODO:
-        1. Add dependencies if provided
-        2. Check if can schedule
-        3. If yes, schedule with scheduler
-        4. If no, add to waiting queue
         """
-        pass
+        if depends_on:
+            self.add_dependency(job_id, depends_on)
+        if self.can_schedule(job_id):
+            self._scheduler.schedule_job(job_id, job_type, priority)
+        else:
+            self._waiting[job_id] = ETLJob(priority.value, _counter = self._counter, job_id=job_id, job_type=job_type, config=config or {})
+            self._counter += 1

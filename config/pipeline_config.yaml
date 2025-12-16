@@ -1,0 +1,8 @@
+# Simple ETL Pipeline Configuration
+
+pipeline:
+  name: "simple_etl"
+  input: "data/raw/input.csv"
+  output: "data/output/processed.json"
+
+# Add more config as needed

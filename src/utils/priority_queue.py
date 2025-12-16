@@ -136,10 +136,11 @@ class DependencyResolver:
         """
         Initialize dependency resolver.
         
-        TODO:
-        - Store scheduler reference
-        - Track dependencies (dict of job_id -> list of dependencies)
-        self._jobs_completed: int = 0
+        TODO: Initialize the following attributes:
+        1. self._scheduler - reference to the JobScheduler
+        2. self._dependencies - dict mapping job_id -> list of jobs it depends on
+        3. self._completed - set to track which jobs have been completed
+        4. self._waiting - dict mapping job_id -> job info for jobs waiting on dependencies
         """
         pass
     

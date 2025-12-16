@@ -130,12 +130,6 @@ class JobScheduler:
 class DependencyResolver:
     """
     Resolves job dependencies for complex ETL workflows.
-    
-    BONUS CHALLENGE: Implement this after basic scheduler works
-    
-    Example:
-    - Job C depends on Job A and Job B completing first
-    - Schedule jobs in correct order
     """
     
     def __init__(self, scheduler: JobScheduler):
@@ -145,7 +139,7 @@ class DependencyResolver:
         TODO:
         - Store scheduler reference
         - Track dependencies (dict of job_id -> list of dependencies)
-        - Track completed jobs
+        self._jobs_completed: int = 0
         """
         pass
     

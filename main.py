@@ -22,39 +22,45 @@ def main():
     """
     Run the ETL pipeline.
     
-    TODO: Implement the following steps:
-    
-    1. Create sample input data (or use existing file)
-    2. Create an extractor (CSVExtractor or JSONExtractor)
-    3. Create transformers:
-       - StringCleaner to clean text fields
-       - FilterTransformer to remove unwanted records
-    4. Create a loader (CSVLoader or JSONLoader)
-    5. Create Pipeline with extractor, transformers, and loader
-    6. Run pipeline and print results
-    
-    Example structure:
-        # Setup
-        extractor = CSVExtractor("data/raw/input.csv")
-        transformers = [
-            StringCleaner(strip=True, lowercase=True),
-            FilterTransformer(lambda r: r.get("age", 0) > 18)
-        ]
-        loader = JSONLoader("data/output/processed.json")
-        
-        # Create and run pipeline
-        pipeline = Pipeline(extractor, transformers, loader)
-        stats = pipeline.run()
-        
-        print(f"Pipeline complete!")
-        print(f"Processed: {stats['processed']} records")
-        print(f"Filtered: {stats['filtered']} records")
-        print(f"Loaded: {stats['loaded']} records")
+    This example:
+    1. Extracts data from CSV
+    2. Cleans string fields (strips whitespace)
+    3. Filters records where age >= 21
+    4. Saves result to JSON
     """
-    print("ETL Pipeline - TODO: Implement main()")
+    print("=" * 50)
+    print("ETL Pipeline Starting...")
+    print("=" * 50)
     
-    # TODO: Your implementation here
-    pass
+    # 1. Setup Extractor
+    print("\n1. Setting up CSV extractor...")
+    extractor = CSVExtractor("data/raw/sample_input.csv")
+    
+    # 2. Setup Transformers
+    print("2. Setting up transformers...")
+    transformers = [
+        StringCleaner(strip=True, lowercase=False),  # Clean whitespace
+        FilterTransformer(lambda r: int(r.get("age", 0)) >= 21)  # Adults only
+    ]
+    
+    # 3. Setup Loader
+    print("3. Setting up JSON loader...")
+    loader = JSONLoader("data/output/processed_adults.json", pretty=True)
+    
+    # 4. Create and Run Pipeline
+    print("\n4. Running pipeline...")
+    pipeline = Pipeline(extractor, transformers, loader)
+    stats = pipeline.run()
+    
+    # 5. Print Results
+    print("\n" + "=" * 50)
+    print("Pipeline Complete! ✓")
+    print("=" * 50)
+    print(f"Total Records Processed: {stats['processed']}")
+    print(f"Records Filtered Out:    {stats['filtered']}")
+    print(f"Records Loaded:          {stats['loaded']}")
+    print(f"\nOutput saved to: data/output/processed_adults.json")
+    print("=" * 50)
 
 
 if __name__ == "__main__":

@@ -23,6 +23,8 @@ class StringCleaner:
                     value = value.strip()
                 if self.lowercase:
                     value = value.lower()
+                record.data[key] = value  # Actually save the cleaned value!
+        return record  # Return the modified record
 
 
 class FilterTransformer:
